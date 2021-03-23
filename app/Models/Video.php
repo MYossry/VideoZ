@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Video extends Model
 {
     use HasFactory;
+    protected $table = 'videos';
+    
     protected $filable =[
         'body',
         'video'

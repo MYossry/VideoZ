@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VideoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -32,15 +33,16 @@ Route::resource('video', VideoController::class)->names([
         'destroy'=>'video.destroy',
 ]);
 Route::prefix('user')->group(function(){
-    Route::get('/{user}',[UserController::class,'index'])->name('user');
+    Route::get('/',[UserController::class,'index'])->name('user.all');
+    Route::get('/{user}',[UserController::class,'show'])->name('user');
 });
 Route::prefix('register')->group(function(){
     Route::get('/',[RegisterController::class,'index'])->name('register.index');
     Route::post('/store',[RegisterController::class,'store'])->name('register.store');
 });
 Route::prefix('login')->group(function(){
-    Route::get('/',[LoginController::class.'index'])->name('login.index');
-    Route::post('/store',[LoginController::class.'store'])->name('login.store');
-    Route::delete('/destroy',[LoginController::class.'destory'])->name('login.destroy');
+    Route::get('/',[LoginController::class,'index'])->name('login.index');
+    Route::post('/store',[LoginController::class,'store'])->name('login.store');
+    Route::delete('/destroy',[LoginController::class,'destroy'])->name('login.destroy');
 
 });

@@ -7,79 +7,65 @@ use Illuminate\Http\Request;
 
 class VideoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $videos = Video::with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return view('video.home', compact('videos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        return view('video.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'body' => 'max:255',
+            'video' => 'required'
+        ]);
+        $video = $request->video;
+        $video->move('videos', time() . $video->getClientOriginalName());
+
+
+        auth()->user->videos->create([
+            'body' => $request->body,
+            'video' => 'videos/' . time() . $video->getClientOriginalName(),
+        ]);
+        return redirect(route('home'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
-     */
     public function show(Video $video)
     {
-        //
+        return view('video.show', compact('video'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Video $video)
     {
-        //
+        return view('video.edit', compact('video'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Video $video)
     {
-        //
+        $this->validate($request, [
+            'body' => 'max:255',
+            'video' => 'required'
+        ]);
+
+        $request->video->move('videos', time() . $video->getClientOriginalName());
+
+        $video->body =  $request->body;
+        $video->video = 'videos/' . time() . $request->video->getClientOriginalName();
+        $video->save();
+        return redirect(route('home'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Video $video)
     {
-        //
+        $video . delete();
+        return back()->with('success', 'Video Deleted Successfully.');
     }
 }
